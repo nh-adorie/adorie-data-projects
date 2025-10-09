@@ -17,7 +17,7 @@ Key columns include:
 
 ## Process
 1. **Data Cleaning & EDA**  
-   Notebook: [01_data_cleaning_eda.ipynb](./notebooks/01_data_cleaning_eda.ipynb)  
+   Notebook: [01_data_cleaning_eda.ipynb](./notebooks/01_eda_cleaning.ipynb)  
    Steps:
    - Handle duplicates and missing values
    - Identify correlated columns and outliers
