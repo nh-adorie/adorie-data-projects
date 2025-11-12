@@ -7,7 +7,7 @@ This repository showcases my end-to-end data analytics projects: from cleaning a
 
 | Project | Description | Tools |
 |----------|--------------|-------|
-| [Customer Personality Analysis Project](./customer-personality-analyis) | Identify customer segments based on their purchasing behavior and demographics. | Python |
+| [Customer Personality Analysis Project](./customer-personality-analysis) | Identify customer segments based on their purchasing behavior and demographics. | Python |
 | [SCM Co Smart Project](./scm-co-smart-project) | Analysis of an e-commerce dataset to identify sales patterns, customer behavior, and shipping efficiency. | Python |
 ---
 
