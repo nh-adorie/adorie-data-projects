@@ -5,10 +5,10 @@ This repository showcases my end-to-end data analytics projects: from cleaning a
 
 ### Projects
 
-| Project | Description | Methods |
+| Project | Description | Approach |
 |----------|--------------|-------|
 | [Telco Customer Churn](./telco-customer-churn) | Analysis of an telecommunications dataset to identify factors lead to customer churn & predict which customers are likely to churn | Logistics Regression, Tree-based Modeling |
-| [Customer Personality Analysis Project](./customer-personality-analysis) | Identify customer segments based on their purchasing behavior and demographics. | K-means, Clustering |
+| [Customer Personality Analysis Project](./customer-personality-analysis) | Identify customer segments based on their purchasing behavior and demographics. | EDA, Clustering, Elbow Method |
 | [SCM Co Smart Project](./scm-co-smart-project) | Analysis of an e-commerce dataset to identify sales patterns, customer behavior, and shipping efficiency. | EDA |
 ---
 
