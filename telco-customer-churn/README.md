@@ -43,23 +43,27 @@ By comparing these methods, we aim to find the most effective model for churn pr
 
 ## Key Findings from EDA 
 ### 1. Contract Type is the Strongest Predictor 
-![Churn Rate by Contract](visualization/churn_by_contract.png)
+<img src="visualization/churn_by_contract.png" alt="contract" width="500"/>
+
 **Insight:** Month-to-month contracts show 42% churn rate, significantly higher than one-year (11%) and two-year (3%) contracts. 
 ### 2. Early Customers are at Highest Risk
-![Churn rate by Tenure](visualization/churn_by_tenure.png) 
+<img src="visualization/churn_by_tenure.png" alt="contract" width="500"/>
+
 **Insight:** Customers with tenure < 12 months account for 50% of all churns. Early customer engagement is critical.
 ### 3. Payment Method Matters
-![Churn rate by Payment method](visualization/churn_by_payment.png)
+<img src="visualization/churn_by_payment.png" alt="contract" width="500"/>
+
 **Insight:** Electronic check users churn at 45%, much higher than other payment methods (15-18%).
 ### 4. Higher Charges Correlate with Churn 
-![Churn vs Monthly Charges](visualization/churn_by_monthlycharges.png)
+<img src="visualization/churn_by_monthlycharges.png" alt="contract" width="500"/>
+
 **Insight:** Churned customers pay an average of $74/month, compared to $61/month for retained customers.
 
 *For detailed analysis, see the full notebook.*
 
 # Logistics Regression Model
 ### Confusion Matrix
-![logistic model](visualization/logistics_reg.png)
+<img src="visualization/confusion_matrix.png" alt="contract" width="500"/>
 
 ### Confusion Matrix Interpretation
 
