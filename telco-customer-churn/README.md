@@ -123,12 +123,12 @@ By comparing these methods, we aim to find the most effective model for churn pr
 
 | Metric | Non-Churn | Churn | 
 |-----------|-----------|-------| 
-| Precision | 0.81 | 0.63 | 
-| Recall | 0.92 | 0.39 | 
-| F1-Score | 0.86 | 0.48 |
+| Precision | 0.83 | 0.64 | 
+| Recall | 0.90 | 0.47 | 
+| F1-Score | 0.86 | 0.54 |
 
 
-**→ Overall Accuracy:** 0.78
+**→ Overall Accuracy:** 0.79
 
 ## Round 2:  Incorporate feature engineering to build improved models
 ### Decision Tree 
@@ -166,9 +166,9 @@ By comparing these methods, we aim to find the most effective model for churn pr
 |------------------------|--------|---------------|-----------------|--------------|----------| 
 | Logistic Regression | 0.XX | 0.74 | 0.50 | 0.81 | 0.62 | 
 | Decision Tree (R1) | 0.82 | 0.78 | 0.63 | 0.39 | 0.48 | 
-| Random Forest (R1) | 0.XX | 0.XX | 0.XX | 0.XX | 0.XX | 
-| Decision Tree (R2) | 0.XX | 0.XX | 0.XX | 0.XX | 0.XX | 
-| Random Forest (R2) | 0.XX | 0.XX | 0.XX | 0.XX | 0.XX | 
+| Random Forest (R1) | 0.84 | 0.79 | 0.64 | 0.47 | 0.54 | 
+| Decision Tree (R2) | 0.82 | 0.78 | 0.60 | 0.45 | 0.52 | 
+| Random Forest (R2) | 0.83 | 0.79 | 0.63 | 0.48 | 0.55 | 
 
 **Note:** R1 = Round 1 (all features), R2 = Round 2 (feature engineered)
 
