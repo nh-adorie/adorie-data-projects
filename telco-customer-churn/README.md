@@ -42,18 +42,20 @@ By comparing these methods, we aim to find the most effective model for churn pr
 -  **Data quality:** No missing values, no duplicates
 
 ## Key Findings from EDA 
-### 1. Contract Type vs Churn 
-[Hình ảnh biểu đồ] 
-**Insight:** Month-to-month contracts have 42% churn rate, significantly higher than one-year (11%) and two-year (3%) contracts. 
-### 2. Tenure Distribution 
-[Hình ảnh biểu đồ] 
-**Insight:** Customers with tenure < 12 months account for 50% of all churns. Early customer engagement is critical. 
-### 3. Monthly Charges 
-[Hình ảnh biểu đồ] 
-**Insight:** Churned customers have higher average monthly charges ($74) compared to retained customers ($61). 
-### 4. Payment Method 
-[Hình ảnh biểu đồ] 
+### 1. Contract Type is the Strongest Predictor 
+![Churn Rate by Contract](telco-customer-churn/visualization/churn_by_contract.png)
+**Insight:** Month-to-month contracts show 42% churn rate, significantly higher than one-year (11%) and two-year (3%) contracts. 
+### 2. Early Customers are at Highest Risk
+![Churn rate by Tenure](telco-customer-churn/visualization/churn_by_tenure.png) 
+**Insight:** Customers with tenure < 12 months account for 50% of all churns. Early customer engagement is critical.
+### 3. Payment Method Matters
+![Churn rate by Payment method](image-2.png)
 **Insight:** Electronic check users churn at 45%, much higher than other payment methods (15-18%).
+### 4. Higher Charges Correlate with Churn 
+![Churn vs Monthly Charges](image-3.png)
+**Insight:** Churned customers pay an average of $74/month, compared to $61/month for retained customers.
+
+*For detailed analysis, see the full notebook.*
 
 # Logistics Regression Model
 
@@ -99,9 +101,9 @@ Trình bày confusion matrix và classification report for logistic regression m
 
 | Metric | Non-Churn | Churn | 
 |-----------|-----------|-------| 
-| Precision | 0.81 | 0.63 | 
-| Recall | 0.92 | 0.39 | 
-| F1-Score | 0.86 | 0.48 |
+| Precision | 0.82 | 0.60 | 
+| Recall | 0.89 | 0.45 | 
+| F1-Score | 0.85 | 0.52 |
 
 
 **→ Overall Accuracy:** 0.78
