@@ -63,7 +63,7 @@ By comparing these methods, we aim to find the most effective model for churn pr
 
 # Logistics Regression Model
 ### Confusion Matrix
-<img src="visualization/confusion_matrix.png" alt="contract" width="500"/>
+<img src="visualization/confusion_matrix.png" alt="contract" width="400"/>
 
 ### Confusion Matrix Interpretation
 
