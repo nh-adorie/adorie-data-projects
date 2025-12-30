@@ -43,23 +43,56 @@ By comparing these methods, we aim to find the most effective model for churn pr
 
 ## Key Findings from EDA 
 ### 1. Contract Type is the Strongest Predictor 
-![Churn Rate by Contract](telco-customer-churn/visualization/churn_by_contract.png)
+![Churn Rate by Contract](visualization/churn_by_contract.png)
 **Insight:** Month-to-month contracts show 42% churn rate, significantly higher than one-year (11%) and two-year (3%) contracts. 
 ### 2. Early Customers are at Highest Risk
-![Churn rate by Tenure](telco-customer-churn/visualization/churn_by_tenure.png) 
+![Churn rate by Tenure](visualization/churn_by_tenure.png) 
 **Insight:** Customers with tenure < 12 months account for 50% of all churns. Early customer engagement is critical.
 ### 3. Payment Method Matters
-![Churn rate by Payment method](image-2.png)
+![Churn rate by Payment method](visualization/churn_by_payment.png)
 **Insight:** Electronic check users churn at 45%, much higher than other payment methods (15-18%).
 ### 4. Higher Charges Correlate with Churn 
-![Churn vs Monthly Charges](image-3.png)
+![Churn vs Monthly Charges](visualization/churn_by_monthlycharges.png)
 **Insight:** Churned customers pay an average of $74/month, compared to $61/month for retained customers.
 
 *For detailed analysis, see the full notebook.*
 
 # Logistics Regression Model
+### Confusion Matrix
+![logistic model](visualization/logistics_reg.png)
 
-Trình bày confusion matrix và classification report for logistic regression model: precision    recall  f1-score   support
+### Confusion Matrix Interpretation
+
+- **True Positive (TP) = 376**  
+  Customers who actually churned and were correctly predicted as churn.  
+  → The model successfully identified these churners.
+
+- **True Negative (TN) = 918**  
+  Customers who did not churn and were correctly predicted as non-churn.  
+  → The model correctly identified loyal customers.
+
+- **False Positive (FP) = 373**  
+  Customers who did not churn but were incorrectly predicted as churn.  
+  → Type I Error (False Alarm).
+
+- **False Negative (FN) = 91**  
+  Customers who actually churned but were incorrectly predicted as non-churn.  
+  → Type II Error (Missed Detection).
+
+### Classification Report
+| Metric | Non-Churn | Churn | 
+|-----------|-----------|-------| 
+| Precision | 0.91 | 0.5 | 
+| Recall | 0.71 | 0.81 | 
+| F1-Score | 0.80 | 0.62 |
+
+**→ Overall Accuracy:** 0.74
+
+### Key Observations
+
+- The model achieves high recall (0.81) for churn customers, meaning it captures most churners.
+- Precision for churn is relatively low (0.50), indicating a higher number of false positives.
+- This behavior is acceptable in churn prediction scenarios where missing a churner is more costly than a false alarm.
 
 # Tree-based Model
 
