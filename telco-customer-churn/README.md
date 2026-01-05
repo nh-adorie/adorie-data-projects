@@ -221,7 +221,7 @@ By comparing these methods, we aim to find the most effective model for churn pr
 - pandas, NumPy 
 - scikit-learn 
 - matplotlib, seaborn 
-- imbalanced-learn 
+- imbalanced-learn
 
 # Author 
 [Adorie] [LinkedIn]
