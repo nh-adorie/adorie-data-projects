@@ -173,23 +173,48 @@ By comparing these methods, we aim to find the most effective model for churn pr
 **Note:** R1 = Round 1 (all features), R2 = Round 2 (feature engineered)
 
 ## Best Model 
-**[Tên model tốt nhất]** achieves the best balance between precision and recall for churn prediction. 
-**Why this model?** 
-- [Lý do 1: ví dụ highest F1 score for churn class] 
-- [Lý do 2: ví dụ good balance between false positives and false negatives] 
--  [Lý do 3: ví dụ suitable for business objective]
+
+**Logistic Regression** achieves the best balance between precision and recall for churn prediction and is selected as the final model.
+
+### Why Logistic Regression?
+
+- **Highest recall for churn class (0.81)**  
+  The model successfully identifies most customers who are likely to churn, minimizing missed churners (false negatives).
+
+- **Reasonable trade-off between precision and recall**  
+  While churn precision is moderate (0.50), the high recall aligns well with churn prediction use cases where capturing at-risk customers is more important than avoiding false alarms.
+
+- **Well-aligned with business objectives**  
+  In customer retention scenarios, it is typically more costly to miss a churner than to contact a non-churn customer. Logistic Regression supports proactive retention strategies.
+
+- **Interpretability and stability**  
+  Compared to tree-based models, Logistic Regression provides more interpretable coefficients and shows consistent performance across training and test sets, reducing the risk of overfitting.
 
 ## Key Insights
-1. **Contract Type:** Month-to-month contracts have significantly higher churn rates 
-2.  **Tenure:** Customers with < 12 months tenure are most at-risk 
-3.  **Payment Method:** Electronic check users churn more frequently 
-4. **[Thêm insights khác từ EDA của bạn]**
+- **Contract Type**  
+  Customers on **month-to-month contracts** show significantly higher churn rates compared to one-year and two-year contracts.
+
+- **Tenure**  
+  Customers with **less than 12 months of tenure** are the most at risk of churn, indicating early-stage customer experience is critical.
+
+- **Payment Method**  
+  Customers using **electronic check** exhibit higher churn rates than those using automatic payment methods such as credit card or bank transfer.
+
+- **Add-on Services**  
+  Customers who do not subscribe to additional services (e.g., online security, tech support) tend to churn more frequently, suggesting lower engagement.
 
 ## Business Recommendations 
-1.  **Target retention campaigns** at customers with month-to-month contracts 
-2.  **Offer incentives** to convert short-tenure customers to longer contracts 
-3. **Improve payment experience** for electronic check users 
-4. **[Thêm recommendations khác]**
+- **Target month-to-month customers with retention campaigns**  
+  Offer contract upgrade incentives or loyalty benefits to encourage longer-term commitments.
+
+- **Focus on early-tenure customer engagement**  
+  Implement onboarding programs and proactive support during the first 12 months to reduce early churn.
+
+- **Improve the electronic payment experience**  
+  Promote automatic payment methods and address potential friction points associated with electronic checks.
+
+- **Increase service bundling and engagement**  
+  Encourage adoption of value-added services to strengthen customer attachment and reduce churn likelihood.
 
 # Tools & Libraries 
 - Python 3.x 
