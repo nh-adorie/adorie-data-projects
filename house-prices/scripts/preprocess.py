@@ -1,6 +1,4 @@
-from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
-from sklearn.impute import SimpleImputer
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, StandardScaler
 import pandas as pd
@@ -11,7 +9,7 @@ from features_group import numeric, categorical_nominal, categorical_ordinal, bo
 # 1. IMPUTATION TRANSFORMER
 
 class CustomImputer(BaseEstimator, TransformerMixin):
-    
+
     def __init__(self):
         # Columns need 'None' imputation
         self.none_cols = [
@@ -30,7 +28,6 @@ class CustomImputer(BaseEstimator, TransformerMixin):
         self.medians_ = {}
     
     def fit(self, X, y=None):
-        # Calculate medians for numeric columns
         for col in self.median_cols:
             if col in X.columns:
                 self.medians_[col] = X[col].median()
