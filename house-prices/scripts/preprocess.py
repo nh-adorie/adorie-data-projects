@@ -5,26 +5,17 @@ import pandas as pd
 import numpy as np
 from features_group import numeric, categorical_nominal, categorical_ordinal, boolean
 
-
 # 1. IMPUTATION TRANSFORMER
-
 class CustomImputer(BaseEstimator, TransformerMixin):
-
     def __init__(self):
-        # Columns need 'None' imputation
         self.none_cols = [
             'PoolQC', 'MiscFeature', 'Alley', 'Fence', 'FireplaceQu',
             'GarageType', 'GarageFinish', 'GarageQual', 'GarageCond',
             'BsmtFinType2', 'BsmtExposure', 'BsmtCond', 'BsmtFinType1', 
             'BsmtQual', 'MasVnrType'
         ]
-        
-        # Columns need median imputation
         self.median_cols = ['LotFrontage', 'MasVnrArea']
-        
-        # GarageYrBlt needs 0 (will be handled in feature engineering)
         self.garage_col = 'GarageYrBlt'
-        
         self.medians_ = {}
     
     def fit(self, X, y=None):
@@ -36,25 +27,20 @@ class CustomImputer(BaseEstimator, TransformerMixin):
     def transform(self, X):
         X = X.copy()
         
-        # Fill 'None' for categorical
         for col in self.none_cols:
             if col in X.columns:
                 X[col] = X[col].fillna('None')
         
-        # Fill median for numeric
         for col in self.median_cols:
             if col in X.columns:
                 X[col] = X[col].fillna(self.medians_.get(col, 0))
         
-        # Fill 0 for GarageYrBlt
         if self.garage_col in X.columns:
             X[self.garage_col] = X[self.garage_col].fillna(0)
         
         return X
 
-
 # 2. FEATURE ENGINEERING TRANSFORMER
-
 class FeatureEngineer(BaseEstimator, TransformerMixin):
     
     def fit(self, X, y=None):
@@ -67,16 +53,14 @@ class FeatureEngineer(BaseEstimator, TransformerMixin):
         X['HouseAge'] = X['YrSold'] - X['YearBuilt']
         X['YearsSinceRemodel'] = X['YrSold'] - X['YearRemodAdd']
         
-        # Handle GarageYrBlt = 0 (no garage)
         X['YearsSinceGarage'] = np.where(
             X['GarageYrBlt'] == 0,
-            0,  # No garage
+            0,
             X['YrSold'] - X['GarageYrBlt']
         )
         
         X['YearsSinceSold'] = X['YrSold'].max() - X['YrSold']
         
-        # Drop original year columns
         X = X.drop(['YearBuilt', 'YearRemodAdd', 'YrSold', 'GarageYrBlt'], axis=1)
         
         # Area features
@@ -88,13 +72,10 @@ class FeatureEngineer(BaseEstimator, TransformerMixin):
         
         return X
 
-
-# 3. ENCODING TRANSFORMER
-
+# 3. ENCODING TRANSFORMER (FIXED)
 class FeatureEncoder(BaseEstimator, TransformerMixin):
     
     def __init__(self):
-        # Ordinal mapping
         self.ordinal_mapping = {
             'ExterQual': ['Po', 'Fa', 'TA', 'Gd', 'Ex'],
             'ExterCond': ['Po', 'Fa', 'TA', 'Gd', 'Ex'],
@@ -130,68 +111,91 @@ class FeatureEncoder(BaseEstimator, TransformerMixin):
     def fit(self, X, y=None):
         X = X.copy()
         
-        # Fit OneHotEncoder
-        if len(self.categorical_nominal) > 0:
-            nom_cols_present = [c for c in self.categorical_nominal if c in X.columns]
-            if nom_cols_present:
-                self.ohe.fit(X[nom_cols_present])
-                self.nom_cols_present = nom_cols_present
-            else:
-                self.nom_cols_present = []
+        # Identify columns present in data
+        self.nom_cols_present = [c for c in self.categorical_nominal if c in X.columns]
+        self.ord_cols_present = [c for c in self.ordinal_cols if c in X.columns]
+        self.bool_cols_present = [c for c in self.boolean_cols if c in X.columns]
         
-        # Fit OrdinalEncoder
-        ord_cols_present = [c for c in self.ordinal_cols if c in X.columns]
-        if ord_cols_present:
-            self.oe.fit(X[ord_cols_present])
-            self.ord_cols_present = ord_cols_present
-        else:
-            self.ord_cols_present = []
+        # Fit encoders
+        if self.nom_cols_present:
+            self.ohe.fit(X[self.nom_cols_present])
+        
+        if self.ord_cols_present:
+            self.oe.fit(X[self.ord_cols_present])
+        
+        # Get remaining numeric columns (after dropping categorical and boolean)
+        cols_to_drop = self.nom_cols_present + self.ord_cols_present + self.bool_cols_present
+        self.numeric_cols = [c for c in X.columns if c not in cols_to_drop]
+        
+        # Build feature names in fixed order
+        self.feature_names_ = []
+        
+        # 1. Numeric columns
+        self.feature_names_.extend(self.numeric_cols)
+        
+        # 2. OneHot encoded columns
+        if self.nom_cols_present:
+            self.feature_names_.extend(self.ohe.get_feature_names_out(self.nom_cols_present).tolist())
+        
+        # 3. Ordinal encoded columns
+        self.feature_names_.extend(self.ord_cols_present)
+        
+        # 4. Boolean columns
+        self.feature_names_.extend(self.bool_cols_present)
         
         return self
     
     def transform(self, X):
         X = X.copy()
         
-        # OneHotEncoder
+        # 1. Get numeric columns
+        numeric_df = X[self.numeric_cols].copy()
+        
+        # 2. OneHot encoding
         if self.nom_cols_present:
-            ohe_arr = self.ohe.transform(X[self.nom_cols_present])
+            ohe_array = self.ohe.transform(X[self.nom_cols_present])
             ohe_df = pd.DataFrame(
-                ohe_arr,
+                ohe_array,
                 columns=self.ohe.get_feature_names_out(self.nom_cols_present),
                 index=X.index
             )
         else:
             ohe_df = pd.DataFrame(index=X.index)
         
-        # OrdinalEncoder
+        # 3. Ordinal encoding
         if self.ord_cols_present:
-            ordinal_arr = self.oe.transform(X[self.ord_cols_present])
+            ord_array = self.oe.transform(X[self.ord_cols_present])
             ordinal_df = pd.DataFrame(
-                ordinal_arr,
+                ord_array,
                 columns=self.ord_cols_present,
                 index=X.index
             )
         else:
             ordinal_df = pd.DataFrame(index=X.index)
         
-        # Boolean
-        for col in self.boolean_cols:
-            if col in X.columns:
-                X[col] = X[col].map({"Y": 1, "N": 0}).fillna(0)
+        # 4. Boolean encoding
+        if self.bool_cols_present:
+            boolean_df = X[self.bool_cols_present].apply(
+                lambda s: s.map({"Y": 1, "N": 0}).fillna(0)
+            )
+        else:
+            boolean_df = pd.DataFrame(index=X.index)
         
-        # Drop original categorical columns
-        cols_to_drop = (self.nom_cols_present + self.ord_cols_present)
-        X = X.drop(columns=cols_to_drop, errors='ignore')
+        # Concatenate all parts
+        X_encoded = pd.concat([numeric_df, ohe_df, ordinal_df, boolean_df], axis=1)
         
-        # Concatenate
-        X = pd.concat([X, ohe_df, ordinal_df], axis=1)
+        # Ensure all expected features exist (fill missing with 0)
+        for col in self.feature_names_:
+            if col not in X_encoded.columns:
+                X_encoded[col] = 0
         
-        return X
+        # Return in the exact order from training
+        X_encoded = X_encoded[self.feature_names_]
+        
+        return X_encoded
 
 # 4. FULL PREPROCESSING PIPELINE
-
 def create_preprocessing_pipeline():
-
     pipeline = Pipeline([
         ('imputer', CustomImputer()),
         ('feature_engineer', FeatureEngineer()),
@@ -200,17 +204,12 @@ def create_preprocessing_pipeline():
     
     return pipeline
 
-
 def preprocess_data(X_train, X_test=None):
-
-    # Create pipeline
     pipeline = create_preprocessing_pipeline()
     
-    # Fit and transform train
     X_train_processed = pipeline.fit_transform(X_train)
     
     if X_test is not None:
-        # Transform test
         X_test_processed = pipeline.transform(X_test)
         return X_train_processed, X_test_processed, pipeline
     
