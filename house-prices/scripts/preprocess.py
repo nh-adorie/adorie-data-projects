@@ -102,6 +102,7 @@ class FeatureEncoder(BaseEstimator, TransformerMixin):
             'BsmtCond': ['None', 'Po', 'Fa', 'TA', 'Gd', 'Ex'],
             'BsmtExposure': ['None', 'No', 'Mn', 'Av', 'Gd'],
             'BsmtFinType1': ['None', 'Unf', 'LwQ', 'Rec', 'BLQ', 'ALQ', 'GLQ'],
+            'BsmtFinType2': ['None', 'Unf', 'LwQ', 'Rec', 'BLQ', 'ALQ', 'GLQ'],
             'HeatingQC': ['Po', 'Fa', 'TA', 'Gd', 'Ex'],
             'KitchenQual': ['Po', 'Fa', 'TA', 'Gd', 'Ex'],
             'FireplaceQu': ['None', 'Po', 'Fa', 'TA', 'Gd', 'Ex'],
