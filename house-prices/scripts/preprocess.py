@@ -17,6 +17,11 @@ class CustomImputer(BaseEstimator, TransformerMixin):
         self.median_cols = ['LotFrontage', 'MasVnrArea']
         self.garage_col = 'GarageYrBlt'
         self.medians_ = {}
+        self.zero_cols = [
+        'BsmtFinSF1', 'BsmtFinSF2', 'BsmtUnfSF', 'TotalBsmtSF',
+        'BsmtFullBath', 'BsmtHalfBath', 'GarageCars', 'GarageArea'
+        ] # Thêm phần này vào vì khi process test data với cùng pipeline cũ thì chỗ này bị NA
+        
     
     def fit(self, X, y=None):
         for col in self.median_cols:
@@ -27,6 +32,10 @@ class CustomImputer(BaseEstimator, TransformerMixin):
     def transform(self, X):
         X = X.copy()
         
+        for col in self.zero_cols:
+            if col in X.columns:
+                X[col] = X[col].fillna(0)
+
         for col in self.none_cols:
             if col in X.columns:
                 X[col] = X[col].fillna('None')
@@ -101,7 +110,9 @@ class FeatureEncoder(BaseEstimator, TransformerMixin):
         self.ordinal_cols = list(self.ordinal_mapping.keys())
         self.boolean_cols = boolean
         
-        self.ohe = OneHotEncoder(sparse_output=False, handle_unknown="ignore")
+        self.ohe = OneHotEncoder(sparse_output=False, handle_unknown="ignore", drop=None)
+        # handle_unknow = ignore giúp bỏ qua các giá trị mới trong test data
+
         self.oe = OrdinalEncoder(
             categories=list(self.ordinal_mapping.values()),
             handle_unknown='use_encoded_value',
@@ -142,7 +153,7 @@ class FeatureEncoder(BaseEstimator, TransformerMixin):
         
         # 4. Boolean columns
         self.feature_names_.extend(self.bool_cols_present)
-        
+           
         return self
     
     def transform(self, X):
@@ -191,7 +202,8 @@ class FeatureEncoder(BaseEstimator, TransformerMixin):
         
         # Return in the exact order from training
         X_encoded = X_encoded[self.feature_names_]
-        
+        # sắp xếp theo đúng thứ tự trong train data
+
         return X_encoded
 
 # 4. FULL PREPROCESSING PIPELINE
