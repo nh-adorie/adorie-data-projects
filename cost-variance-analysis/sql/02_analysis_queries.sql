@@ -1,153 +1,89 @@
-USE cost_variance_analysis;
-SHOW TABLES;
+-- ============================================================
+-- 02_analysis_queries.sql
+-- Các câu SELECT dùng để khám phá, kiểm tra dữ liệu, trả lời
+-- câu hỏi ad-hoc. KHÔNG dùng để feed Power BI (xem 03_visualization.sql)
+-- Sửa/thử nghiệm thoải mái ở file này, không ảnh hưởng dashboard
+-- ============================================================
 
-SELECT * FROM bom_data;
-SELECT * FROM fx_rate;
-SELECT * FROM model_master;
-SELECT * FROM quantity;
 
--- Analyze sales difference btw forecast and actual--
+-- ------------------------------------------------------------
+-- Q1: Part nào đang cost up (CU) ở nhiều model cùng lúc?
+-- (gợi ý: nghi vấn 1 nhà cung cấp chung đang tăng giá)
+-- ------------------------------------------------------------
+SELECT part_code, part_name,
+    COUNT(DISTINCT model) AS num_models_affected,
+    SUM(CASE WHEN cu_cr = 'cu' THEN gap ELSE 0 END) AS total_cu
+FROM bom_data
+WHERE version = 'actual' AND cu_cr = 'cu'
+GROUP BY part_code, part_name
+HAVING num_models_affected > 1
+ORDER BY total_cu DESC;
 
-CREATE OR REPLACE VIEW view_sales AS
-SELECT 
-	qty.version, qty.model, qty.quantity, qty.month, 
-    mm.exf, mm.market, 
-    fx.to_vnd,
-    ROUND(CASE
-		WHEN market = 'VN' THEN mm.exf
-		WHEN market != 'VN' THEN mm.exf * fx.to_vnd
-	END, 2) AS unit_price_vnd,
-    ROUND( CASE 
-		WHEN market = 'VN' THEN qty.quantity * mm.exf / 1000000 
-		WHEN market != 'VN' THEN qty.quantity * mm.exf * fx.to_vnd / 1000000 
-    END, 2) AS total_sales_m_vnd
-FROM quantity qty
-LEFT JOIN model_master mm
-	ON qty.model = mm.model
-LEFT JOIN fx_rate fx
-	ON qty.version = fx.version
-    AND qty.month = fx.month
-WHERE fx.currency = 'USD';
 
-CREATE OR REPLACE VIEW view_gap_sales AS
-WITH forecast_data AS (
-	SELECT * 
-	FROM view_sales
-	WHERE version = 'forecast'
-),
-actual_data AS(
-	SELECT *
-    FROM view_sales
-    WHERE version = 'actual'
-)
-SELECT 
-	fct.version, fct.month, fct.model, fct.exf, fct.quantity AS fct_quantity, fct.market, fct.to_vnd AS fct_fx, fct.total_sales_m_vnd AS fct_sales,
-    act.quantity AS act_quantity, act.to_vnd AS act_fx, act.total_sales_m_vnd AS act_sales,
-    act.total_sales_m_vnd - fct.total_sales_m_vnd AS gap_sales,
-    act.quantity - fct.quantity AS gap_qty,
-    ROUND((act.quantity - fct.quantity) * fct.unit_price_vnd / 1000000, 2) AS gap_by_qty,
-    CASE
-		WHEN fct.market = 'VN' THEN 0
-        WHEN fct.market != 'VN' THEN ROUND((act.to_vnd - fct.to_vnd) * act.quantity * fct.exf / 1000000, 2) 
-        END AS gap_by_fx
-FROM forecast_data fct
-JOIN actual_data act
-	ON fct.model = act.model
-    AND fct.month = act.month
-ORDER BY fct.month, fct.model;
+-- ------------------------------------------------------------
+-- Q2: CU/CR forecast có bị đảo chiều so với actual không?
+-- (kiểm tra chất lượng dữ liệu / độ tin cậy forecast)
+-- ------------------------------------------------------------
+SELECT
+    fct.cu_cr AS forecast_cu_cr,
+    act.cu_cr AS actual_cu_cr,
+    COUNT(*) AS num_rows
+FROM bom_data fct
+JOIN bom_data act
+    ON fct.model = act.model AND fct.month = act.month AND fct.part_code = act.part_code
+WHERE fct.version = 'forecast' AND act.version = 'actual'
+GROUP BY fct.cu_cr, act.cu_cr;
 
-SELECT 
-	month,
-    SUM(fct_quantity) AS fct_total_qty,
-    SUM(act_quantity) AS act_total_qty,
-    SUM(gap_qty) AS total_gap_qty,
-    SUM(fct_sales) AS fct_total_sales,
-    SUM(act_sales) AS act_total_sales,
-    SUM(gap_sales) AS total_gap_sales,
-    SUM(gap_by_qty) AS gap_by_model_mix,
-    SUM(gap_by_fx) AS gap_by_fx
-FROM view_gap_sales
-GROUP BY month;
 
--- Analyze CU, CR gap btw forecast and actual
-
--- Create view for CU CR per model
-CREATE OR REPLACE VIEW view_cu_cr AS
-WITH forecast_bom AS (
-    SELECT * FROM bom_data WHERE version = 'forecast'
-),
-actual_bom AS (
-    SELECT * FROM bom_data WHERE version = 'actual'
-),
-forecast_qty AS (
-    SELECT * FROM quantity WHERE version = 'forecast'
-),
-actual_qty AS (
-    SELECT * FROM quantity WHERE version = 'actual'
-)
-SELECT 
-    fct.month, fct.model, fct.part_code, fct.part_name,
-    forecast_qty.quantity AS fct_qty,
-    actual_qty.quantity AS act_qty,
-    fct.gap AS fct,
-    act.gap AS act,
-    CASE 
-        WHEN NULLIF(TRIM(act.cu_cr), '') IS NOT NULL THEN act.cu_cr
-        WHEN fct.cu_cr = 'cu' THEN 'cu'
-        WHEN fct.cu_cr = 'cr' THEN 'cr'
-    END AS cu_cr,
-
-    act.gap - fct.gap AS gap_per_unit,
-    ((act.gap * actual_qty.quantity) - (fct.gap * forecast_qty.quantity)) / 1000000 AS gap_total,
-    (actual_qty.quantity - forecast_qty.quantity) * fct.gap / 1000000 AS gap_by_qty,
-    (act.gap - fct.gap) * actual_qty.quantity / 1000000 AS gap_by_cu_cr_variance
-
-FROM forecast_bom fct
-JOIN actual_bom act
-    ON fct.month = act.month
-    AND fct.model = act.model
-    AND fct.part_code = act.part_code
-JOIN forecast_qty
-    ON fct.month = forecast_qty.month
-    AND fct.model = forecast_qty.model
-JOIN actual_qty
-    ON act.month = actual_qty.month
-    AND act.model = actual_qty.model;
-
--- Summary CU, CR
-SELECT 
-    month,
-    cu_cr,
+-- ------------------------------------------------------------
+-- Q3: Tổng CU/CR variance theo tháng, tách gap do qty / do variance
+-- ------------------------------------------------------------
+SELECT month, cu_cr,
     SUM(gap_total) AS gap_total,
     SUM(gap_by_qty) AS gap_by_qty,
-    SUM(gap_by_cu_cr_variance) AS gap_by_cu_cr_variance
+    SUM(gap_by_cu_cr_variance) AS gap_by_variance
 FROM view_cu_cr
 WHERE cu_cr IS NOT NULL
 GROUP BY month, cu_cr
 ORDER BY month, cu_cr;
 
--- Create view total DMC
-CREATE OR REPLACE VIEW view_dmc_monthly AS
-SELECT
-    version, model, month,
-    SUM(tm_value) AS dmc_total,
-    SUM(CASE WHEN cu_cr = 'cu' THEN gap ELSE 0 END) AS monthly_cu,
-    SUM(CASE WHEN cu_cr = 'cr' THEN gap ELSE 0 END) AS monthly_cr,
-    SUM(gap) AS monthly_net_gap
-FROM bom_data
-GROUP BY version, model, month;
 
+-- ------------------------------------------------------------
+-- Q4: Tỷ lệ DMC/Sales theo model (kiểm tra tính hợp lý dữ liệu,
+-- mục tiêu 60-70% cho ngành sản xuất)
+-- ------------------------------------------------------------
 SELECT
-    fct.model, fct.month,
-    fct.dmc_total AS dmc_forecast,
-    act.dmc_total AS dmc_actual,
-    act.dmc_total - fct.dmc_total AS cumulative_gap,
-    SUM(act.monthly_cu) OVER (PARTITION BY act.model ORDER BY act.month) AS ytd_cu_actual,
-    SUM(act.monthly_cr) OVER (PARTITION BY act.model ORDER BY act.month) AS ytd_cr_actual
-FROM view_dmc_monthly fct
-JOIN view_dmc_monthly act
-    ON fct.model = act.model 
-    AND fct.month = act.month
-    AND fct.version = 'forecast' 
-    AND act.version = 'actual'
-ORDER BY fct.model, fct.month;
+    d.model, mm.market,
+    d.dmc_total AS dmc_amount,
+    s.total_sales_m_vnd * 1000000 AS sales_amount,
+    ROUND(d.dmc_total / (s.total_sales_m_vnd * 1000000) * 100, 1) AS dmc_pct_of_sales
+FROM view_dmc_total_by_month d
+JOIN view_sales s ON d.model = s.model AND d.month = s.month AND d.version = s.version
+JOIN model_master mm ON d.model = mm.model
+WHERE d.version = 'actual' AND d.month = '2025-02'
+ORDER BY dmc_pct_of_sales;
+
+
+-- ------------------------------------------------------------
+-- Q5: Model nào có Gap DMC (forecast vs actual) lớn nhất -> cần
+-- soi kỹ BOM để tìm nguyên nhân forecast sai
+-- ------------------------------------------------------------
+SELECT month, model,
+    SUM(gap_total) AS total_gap,
+    ABS(SUM(gap_total)) AS abs_gap
+FROM view_cu_cr
+GROUP BY month, model
+ORDER BY abs_gap DESC
+LIMIT 20;
+
+
+-- ------------------------------------------------------------
+-- Q6: So sánh DMC theo category qua thời gian (kiểm tra câu chuyện
+-- "category A bị supplier hike")
+-- ------------------------------------------------------------
+SELECT mm.category, d.month, d.version,
+    SUM(d.dmc_total) AS dmc_total
+FROM view_dmc_total_by_month d
+JOIN model_master mm ON d.model = mm.model
+GROUP BY mm.category, d.month, d.version
+ORDER BY mm.category, d.month, d.version;
