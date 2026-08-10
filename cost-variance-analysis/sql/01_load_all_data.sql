@@ -53,7 +53,7 @@ TRUNCATE TABLE bom_data;
 
 -- ============================================================
 
-LOAD DATA LOCAL INFILE "C:\Users\Admin\Downloads\projects\cost-variance-analysis\data\model_master.csv"
+LOAD DATA LOCAL INFILE "C:/Users/Admin/Downloads/projects/cost-variance-analysis/data/model_master.csv"
 INTO TABLE model_master
 CHARACTER SET utf8mb4
 FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
@@ -62,7 +62,7 @@ IGNORE 1 ROWS
 (model, category, market, standard_cost_domestic, standard_cost_import,
  exf, import_usd_value, import_jpy_value);
 
-LOAD DATA LOCAL INFILE "C:\Users\Admin\Downloads\projects\cost-variance-analysis\data\fx_rate.csv"
+LOAD DATA LOCAL INFILE "C:/Users/Admin/Downloads/projects/cost-variance-analysis/data/fx_rate.csv"
 INTO TABLE fx_rate
 CHARACTER SET utf8mb4
 FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
@@ -70,7 +70,7 @@ LINES TERMINATED BY '\n'
 IGNORE 1 ROWS
 (version, month, currency, to_vnd);
 
-LOAD DATA LOCAL INFILE "C:\Users\Admin\Downloads\projects\cost-variance-analysis\data\quantity.csv"
+LOAD DATA LOCAL INFILE "C:/Users/Admin/Downloads/projects/cost-variance-analysis/data/quantity.csv"
 INTO TABLE quantity
 CHARACTER SET utf8mb4
 FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
@@ -78,7 +78,7 @@ LINES TERMINATED BY '\n'
 IGNORE 1 ROWS
 (version, model, quantity, month);
 
-LOAD DATA LOCAL INFILE "C:\Users\Admin\Downloads\projects\cost-variance-analysis\data\bom_data.csv"
+LOAD DATA LOCAL INFILE "C:/Users/Admin/Downloads/projects/cost-variance-analysis/data/bom_data.csv"
 INTO TABLE bom_data
 CHARACTER SET utf8mb4
 FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
