@@ -8,7 +8,6 @@ SELECT * FROM quantity;
 
 -- Analyze sales difference btw forecast and actual--
 
--- Tạo view merge bảng model_master, quantity, fx
 CREATE OR REPLACE VIEW view_sales AS
 SELECT 
 	qty.version, qty.model, qty.quantity, qty.month, 
@@ -30,7 +29,6 @@ LEFT JOIN fx_rate fx
     AND qty.month = fx.month
 WHERE fx.currency = 'USD';
 
--- Từ view vừa tạo, tách thành forecast data và actual data để so sánh
 CREATE OR REPLACE VIEW view_gap_sales AS
 WITH forecast_data AS (
 	SELECT * 
@@ -153,4 +151,3 @@ JOIN view_dmc_monthly act
     AND fct.version = 'forecast' 
     AND act.version = 'actual'
 ORDER BY fct.model, fct.month;
-
