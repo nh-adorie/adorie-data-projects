@@ -229,3 +229,27 @@ FROM bom_data b
 JOIN model_master mm ON b.model = mm.model
 WHERE b.version = 'actual'
 GROUP BY mm.category;
+
+CREATE OR REPLACE VIEW view_sales_actual_trend AS
+SELECT '2024-10' AS month,
+    SUM(
+        CASE 
+            WHEN mm.market = 'VN' THEN q.quantity * mm.exf / 1000000
+            ELSE q.quantity * mm.exf * 26300 / 1000000  -- dùng USD baseline rate (26,300)
+        END
+    ) AS total_sales_m_vnd
+FROM model_master mm
+JOIN quantity q ON q.model = mm.model AND q.month = '2024-11' AND q.version = 'forecast'
+UNION ALL
+SELECT month, SUM(total_sales_m_vnd) AS total_sales_m_vnd
+FROM view_sales
+WHERE version = 'actual'
+GROUP BY month;
+
+CREATE OR REPLACE VIEW view_cu_cr_trend AS
+SELECT month, model,
+    SUM(CASE WHEN cu_cr = 'cu' THEN gap ELSE 0 END) AS cu_amount,
+    SUM(CASE WHEN cu_cr = 'cr' THEN gap ELSE 0 END) AS cr_amount
+FROM bom_data
+WHERE version = 'actual' AND cu_cr IS NOT NULL
+GROUP BY month, model;
