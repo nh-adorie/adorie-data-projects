@@ -210,6 +210,3 @@ By understanding customer personality segments, businesses can optimize their ma
 - Scikit-learn (K-Means Clustering)
 - Matplotlib, Seaborn
 - Jupyter Notebook
-
-## Author 
-[Adorie] [LinkedIn]
