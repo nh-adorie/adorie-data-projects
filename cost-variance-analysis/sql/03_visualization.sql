@@ -102,6 +102,17 @@ FROM view_sales
 WHERE version = 'actual'
 GROUP BY month;
 
+-- top variance models by month 
+CREATE OR REPLACE VIEW view_top_gap_by_month AS
+SELECT month, model, total_gap, gap_rank
+FROM (
+    SELECT month, model,
+        SUM(gap_total) AS total_gap,
+        RANK() OVER (PARTITION BY month ORDER BY ABS(SUM(gap_total)) DESC) AS gap_rank
+    FROM view_cu_cr
+    GROUP BY month, model
+) ranked
+WHERE gap_rank <= 5;
 
 -- Page 2
 -- view_cu_cr
