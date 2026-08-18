@@ -26,10 +26,45 @@ By understanding customer personality segments, businesses can optimize their ma
 
 ### Dataset Overview 
 - **Size**: 2,240 customers × 29 features 
-- **Data Quality**: No duplicates; 24 missing values (MCAR)
+- **Data Quality**: No duplicates; 24 missing values (MCAR, dropped)
 
-### Correlation Heatmap 
+### Key Findings from EDA
+
+#### 1. Customers are predominantly established households
+<img src="visualization/isparent_distribution.png" width="350"/>
+
+**Insight:** 71% of customers have children at home, and 64.6% are in a relationship — the customer base skews toward established family households rather than single, childless individuals.
+
+#### 2. Engagement with the company is generally low
+<img src="visualization/campaign_acceptance.png" width="500"/>
+
+**Insight:** Only 0.9% of customers have ever filed a complaint, but marketing campaign acceptance is also low across the board — Campaign 4 performs best at just 7.5% acceptance, and Campaign 2 the worst at 1.3%. Low complaints paired with low campaign response suggests a largely passive customer base rather than an actively dissatisfied one.
+
+#### 3. Higher education strongly predicts higher spending — marital status barely does
+<img src="visualization/education_vs_spending.png" width="450"/>
+<img src="visualization/marital_vs_spending.png" width="450"/>
+
+| Education | Income | Total Spending |
+|---|---|---|
+| Basic | $20,306 | $82 |
+| 2n Cycle | $47,625 | $499 |
+| Graduation | $52,139 | $620 |
+| Master | $53,011 | $609 |
+| PhD | $55,668 | $673 |
+
+**Insight:** Spending swings **97.6%** between the lowest and highest education tier — education is a meaningful segmentation driver. By contrast, spending only differs **4.8%** between "Single" and "In a relationship" customers ($624 vs. $595) — marital status alone barely differentiates spending behavior, which is why it was excluded from the clustering features.
+
+#### 4. Income and spending are strongly linked — but more children pulls spending down
 <img src="visualization/correlation_heatmap.png" width="500"/>
+
+**Insight:** Income correlates strongly with spending (Income–Wine spending: r = 0.81, Income–Meat spending: r = 0.79), while number of children correlates *negatively* with both income (r = -0.34) and spending across nearly every category (r = -0.28 to -0.47) — households with more children spend less even at similar income levels, likely reflecting competing budget priorities.
+
+#### 5. Distribution shape and outlier handling
+<img src="visualization/age_income_distribution.png" width="600"/>
+
+**Insight:** Age is slightly right-skewed (majority 48–65 years old, a predominantly middle-aged customer base), Recency is roughly uniform (0–99 days since last purchase), and Income is right-skewed with a long tail of high earners (majority between $35,303–$68,413/month). A small number of extreme outliers (e.g., one customer reporting $666,666/month income) were dropped, while product-spending outliers were kept and log-transformed instead of removed, since they likely represent genuine premium buyers rather than data errors.
+
+*For the full breakdown (education/marital status distribution, campaign-by-campaign response, boxplots per numeric column), see the notebook.*
 
 ---
 
