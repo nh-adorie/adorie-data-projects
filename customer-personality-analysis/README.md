@@ -33,7 +33,7 @@ By understanding customer personality segments, businesses can optimize their ma
 #### 1. Customers are predominantly established households
 <img src="visualization/isparent_distribution.png" width="350"/>
 
-**Insight:** 71% of customers have children at home, and 64.6% are in a relationship — the customer base skews toward established family households rather than single, childless individuals.
+**Insight:** 71% of customers have children at home: the customer base skews toward established family households rather than single, childless individuals.
 
 #### 2. Engagement with the company is generally low
 <img src="visualization/campaign_acceptance.png" width="500"/>
@@ -60,9 +60,10 @@ By understanding customer personality segments, businesses can optimize their ma
 **Insight:** Income correlates strongly with spending (Income–Wine spending: r = 0.81, Income–Meat spending: r = 0.79), while number of children correlates *negatively* with both income (r = -0.34) and spending across nearly every category (r = -0.28 to -0.47) — households with more children spend less even at similar income levels, likely reflecting competing budget priorities.
 
 #### 5. Distribution shape and outlier handling
-<img src="visualization/age_income_distribution.png" width="600"/>
+<img src="visualization/income_distribution.png" width="600"/>
+<img src="visualization/spending_distribution.png" width="600"/>
 
-**Insight:** Age is slightly right-skewed (majority 48–65 years old, a predominantly middle-aged customer base), Recency is roughly uniform (0–99 days since last purchase), and Income is right-skewed with a long tail of high earners (majority between $35,303–$68,413/month). A small number of extreme outliers (e.g., one customer reporting $666,666/month income) were dropped, while product-spending outliers were kept and log-transformed instead of removed, since they likely represent genuine premium buyers rather than data errors.
+**Insight:** Income is right-skewed with a long tail of high earners (majority between $35,303–$68,413/month). A small number of extreme outliers (e.g., one customer reporting $666,666/month income) were dropped, while product-spending outliers were kept and log-transformed instead of removed, since they likely represent genuine premium buyers rather than data errors.
 
 *For the full breakdown (education/marital status distribution, campaign-by-campaign response, boxplots per numeric column), see the notebook.*
 
@@ -71,11 +72,26 @@ By understanding customer personality segments, businesses can optimize their ma
 ## Clustering Analysis
 
 ### Optimal Cluster Selection
+
 <img src="visualization/elbow.png" width="500"/>
 
-**Elbow Method Result**: K = 4 clusters identified as optimal
+The elbow method suggested K=3 or K=4 without a sharp, unambiguous bend. Silhouette score was checked as a second signal:
 
-<img src="visualization/plotK4.png" width="500"/>
+| K | Silhouette Score |
+|---|---|
+| 2 | 0.320 |
+| 3 | 0.244 |
+| 4 | 0.184 |
+
+Silhouette score decreases steadily as K increases, with no peak at K=4 — statistically, fewer clusters separate more cleanly. To decide between statistical separation and business usefulness, all three candidate values of K were profiled and compared directly.
+
+**K=2** splits customers along a single axis — income/spending level ($68K/$1,113 spend vs. $37K/$141 spend), collapsing every other distinction into two broad tiers.
+
+**K=3** recovers two clearly distinct, actionable segments almost identically to the final K=4 solution (a budget-conscious family segment and a deal-seeking middle-income segment), but still merges the two highest-income groups into one cluster averaging 33.1% "has children" — a number that doesn't represent either underlying group well, since it blends a family-oriented segment (86% with children) with a childless professional segment (8% with children).
+
+**K=4** resolves exactly this remaining ambiguity, splitting the high-income cluster into "Affluent Parents" and "Premium Childless Professionals" — two segments with opposite family compositions and different channel behavior (catalog-preferring, deal-averse childless professionals vs. omnichannel, moderately deal-using parents), which call for different marketing strategies.
+
+**K=4 was selected** over the statistically higher-scoring K=2/K=3, trading a modest amount of cluster separation for a segmentation that surfaces every behaviorally and demographically distinct group relevant to marketing strategy.
 
 ## Cluster Profiles
 
