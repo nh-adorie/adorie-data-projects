@@ -1,15 +1,16 @@
 # Cost Variance Analysis
 
-A SQL + Power BI project simulating the monthly Cost Variance Analysis workflow of a Cost Management team at a home-appliance manufacturer — the same analysis I performed manually in Excel/Power Query during 1.5 years working in Cost Management at a manufacturing company. This project rebuilds that workflow with a proper semantic layer in SQL and an interactive Power BI report, to practice doing the analysis the way a dedicated data tool would.
+A SQL + Power BI project simulating the monthly Cost Variance Analysis workflow of a Cost Management team at a home-appliance manufacturer - the same analysis I performed manually in Excel/Power Query during 1.5 years working in Cost Management at a manufacturing company. 
+This project rebuilds that workflow with a proper semantic layer in SQL and an interactive Power BI report, to practice doing the analysis the way a dedicated data tool would.
 
 ## Background
 
 Every month, the company sets a **forecast** for production quantity and **DMC (Direct Material Cost)** for each product model. By month-end, **actual** figures always deviate from forecast. The Cost Management team's job is to:
 
 1. **Measure the gap** between Forecast and Actual for both Sales and DMC.
-2. **Decompose the causes of the gap** — is it driven by a change in *production quantity* (Quantity Variance), a change in *component price* (CU/CR Variance), or *FX rate movement* (FX Variance)?
-3. **Trace down to part level** — which parts are experiencing **Cost Up (CU)** or **Cost Down (CR)**, and why (supplier negotiation, design change, or market conditions)?
-4. **Assign accountability** — is a CR the result of internal effort (Purchasing/R&D — Operational-driven / Engineering-driven), or is a CU driven by external, uncontrollable market factors (Market-driven)?
+2. **Decompose the causes of the gap**: is it driven by a change in *production quantity* (Quantity Variance), a change in *component price* (CU/CR Variance), or *FX rate movement* (FX Variance)?
+3. **Trace down to part level**: which parts are experiencing **Cost Up (CU)** or **Cost Down (CR)**, and why (supplier negotiation, design change, or market conditions)?
+4. **Assign accountability**: is a CR the result of internal effort (Operational-driven / Engineering-driven), or is a CU driven by external, uncontrollable market factors (Market-driven)?
 
 This is a key report for leadership: it shows whether the team is effectively controlling cost and how exposed the business is to market risk.
 
@@ -75,17 +76,6 @@ The data model follows a simple **star schema**:
 - **A semantic layer pays off fast.** Pushing all forecast-vs-actual join and variance logic into SQL views — instead of building it inside Power BI with DAX — made the report far easier to debug and test independently of the visualization layer.
 - **Aggregation context bugs are easy to miss.** A Top-N filter that worked correctly when a single month was selected silently broke when the report defaulted to "All months": ranking was computed per (month, model), but the visual displayed a `SUM(total_gap)` at the model level — a mismatch between the grain of the filter and the grain of the display. Fixed by (1) locking the report to a single-month context via a bookmark, and (2) adding a separate aggregate-first ranking view (`view_top_gap_overall`) for true all-time comparisons.
 - **RANK vs. ROW_NUMBER is a deliberate choice, not a default.** Used `RANK()` instead of `ROW_NUMBER()` for the Top-N views so that tied variance values are never silently dropped from the leaderboard — appropriate for a report leadership uses to flag risk, where hiding a tied model is worse than showing an extra row.
-
-## Repo Structure
-
-```
-├── data/                      # synthetic CSV source files
-├── 01_load_all_data.sql       # schema definition + data loading
-├── 02_analysis_queries.sql    # exploratory business-question queries
-├── 03_visualization.sql       # semantic layer (views) powering Power BI
-├── powerbi/                   # .pbix file + dashboard screenshots
-└── README.md
-```
 
 ## Tools
 

@@ -8,7 +8,7 @@ This repository showcases end-to-end data projects, from cleaning and EDA to vis
 | Project | Description | Approach |
 |----------|--------------|-------|
 | [Cost Variance Analysis](./cost-variance-analysis) | Decomposes monthly forecast-vs-actual cost variance by quantity, FX, and component price, and assigns accountability (market-driven vs. internal effort) — based on an analysis process the author performs at work every month. | SQL, Power BI |
-| [Telco Customer Churn](./telco-customer-churn) | Identifies key churn drivers and compares Logistic Regression vs. tree-based models to flag at-risk telecom customers, enabling targeted retention campaigns. | Logistic Regression, Tree-based Modeling |
+| [Telco Customer Churn](./telco-customer-churn) | Identifies key churn drivers and compares Logistic Regression vs. tree-based models to flag at-risk telecom customers, enabling targeted retention campaigns. | EDA, Logistic Regression, Tree-based Modeling |
 | [Customer Personality Analysis](./customer-personality-analysis) | Segments customers by purchasing behavior and demographics into actionable marketing personas, balancing statistical cluster separation with business usefulness. | EDA, K-Means Clustering |
 ---
 

@@ -32,12 +32,12 @@ Predict which customers are likely to churn, enabling the company to:
 
 1. Cleaned and explored the data (type conversion, missing-value handling, outlier check via boxplots).
 2. Ran univariate and interaction EDA (churn rate by category, by tenure bucket, by combinations of variables) to surface the strongest churn drivers before touching any model.
-3. Compared two modeling families — **Logistic Regression** and **tree-based models** (Decision Tree, Random Forest) — trained with the same train/test split and cross-validation setup for a like-for-like comparison.
+3. Compared two modeling families: **Logistic Regression** and **tree-based models** (Decision Tree, Random Forest). Trained with the same train/test split and cross-validation setup for a like-for-like comparison.
 4. Applied `class_weight='balanced'` consistently across **all** models, since the dataset's 73/27 class split would otherwise bias every model toward the majority (non-churn) class regardless of algorithm.
 5. Ran a second modeling round with engineered features (tenure buckets, charge tiers, service count) to test whether simplifying/aggregating raw features improved performance.
 6. Selected a final model based on a combination of predictive performance and business-facing criteria (interpretability, simplicity) rather than on the single highest metric alone.
 
-## EDA — Key Findings
+## EDA - Key Findings
 
 ### 1. Contract Type is the Strongest Predictor
 <img src="visualization/churn_by_contract.png" alt="contract" width="500"/>
@@ -75,8 +75,8 @@ All models below were trained with `class_weight='balanced'` to address the 73/2
 | **Actual Non-Churn** | TN = 918 | FP = 373 |
 | **Actual Churn** | FN = 91 | TP = 376 |
 
-- **FP (373):** customers flagged as at-risk who actually stayed — a false alarm, costing an unnecessary retention outreach.
-- **FN (91):** customers who churned but weren't flagged — a missed churner, costing the customer entirely.
+- **FP (373):** customers flagged as at-risk who actually stayed - a false alarm, costing an unnecessary retention outreach.
+- **FN (91):** customers who churned but weren't flagged - a missed churner, costing the customer entirely.
 - Since missing a churner (FN) is materially more costly than a false alarm (FP) for a retention program, **recall on the churn class is the priority metric** for this problem.
 
 | Metric | Non-Churn | Churn |

@@ -52,12 +52,12 @@ By understanding customer personality segments, businesses can optimize their ma
 | Master | $53,011 | $609 |
 | PhD | $55,668 | $673 |
 
-**Insight:** Spending swings **97.6%** between the lowest and highest education tier — education is a meaningful segmentation driver. By contrast, spending only differs **4.8%** between "Single" and "In a relationship" customers ($624 vs. $595) — marital status alone barely differentiates spending behavior, which is why it was excluded from the clustering features.
+**Insight:** Spending swings **97.6%** between the lowest and highest education tier, education is a meaningful segmentation driver. By contrast, spending only differs **4.8%** between "Single" and "In a relationship" customers ($624 vs. $595), marital status alone barely differentiates spending behavior, which is why it was excluded from the clustering features.
 
 #### 4. Income and spending are strongly linked — but more children pulls spending down
 <img src="visualization/correlation_heatmap.png" width="450"/>
 
-**Insight:** Income correlates strongly with spending (Income–Wine spending: r = 0.81, Income–Meat spending: r = 0.79), while number of children correlates *negatively* with both income (r = -0.34) and spending across nearly every category (r = -0.28 to -0.47) — households with more children spend less even at similar income levels, likely reflecting competing budget priorities.
+**Insight:** Income correlates strongly with spending (Income–Wine spending: r = 0.81, Income–Meat spending: r = 0.79), while number of children correlates *negatively* with both income (r = -0.34) and spending across nearly every category (r = -0.28 to -0.47), households with more children spend less even at similar income levels, likely reflecting competing budget priorities.
 
 #### 5. Distribution shape and outlier handling
 <img src="visualization/income_distribution.png" width="450"/>
@@ -83,13 +83,11 @@ The elbow method suggested K=3 or K=4 without a sharp, unambiguous bend. Silhoue
 | 3 | 0.244 |
 | 4 | 0.184 |
 
-Silhouette score decreases steadily as K increases, with no peak at K=4 — statistically, fewer clusters separate more cleanly. To decide between statistical separation and business usefulness, all three candidate values of K were profiled and compared directly.
+**K=2** splits customers along a single axis: income/spending level ($68K/$1,113 spend vs. $37K/$141 spend), collapsing every other distinction into two broad tiers.
 
-**K=2** splits customers along a single axis — income/spending level ($68K/$1,113 spend vs. $37K/$141 spend), collapsing every other distinction into two broad tiers.
+**K=3** recovers two clearly distinct, actionable segments almost identically to the final K=4 solution (a budget-conscious family segment and a deal-seeking middle-income segment), but still merges the two highest-income groups into one cluster averaging 33.1% "has children" - a number that doesn't represent either underlying group well, since it blends a family-oriented segment (86% with children) with a childless professional segment (8% with children).
 
-**K=3** recovers two clearly distinct, actionable segments almost identically to the final K=4 solution (a budget-conscious family segment and a deal-seeking middle-income segment), but still merges the two highest-income groups into one cluster averaging 33.1% "has children" — a number that doesn't represent either underlying group well, since it blends a family-oriented segment (86% with children) with a childless professional segment (8% with children).
-
-**K=4** resolves exactly this remaining ambiguity, splitting the high-income cluster into "Affluent Parents" and "Premium Childless Professionals" — two segments with opposite family compositions and different channel behavior (catalog-preferring, deal-averse childless professionals vs. omnichannel, moderately deal-using parents), which call for different marketing strategies.
+**K=4** resolves exactly this remaining ambiguity, splitting the high-income cluster into "Affluent Parents" and "Premium Childless Professionals" - two segments with opposite family compositions and different channel behavior (catalog-preferring, deal-averse childless professionals vs. omnichannel, moderately deal-using parents), which call for different marketing strategies.
 
 **K=4 was selected** over the statistically higher-scoring K=2/K=3, trading a modest amount of cluster separation for a segmentation that surfaces every behaviorally and demographically distinct group relevant to marketing strategy.
 
