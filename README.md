@@ -1,6 +1,6 @@
 # Adorie's Data Analytics Portfolio
 
-1.5 years in Cost Management at a manufacturing company, self-taught in SQL/Python/Power BI along the way. 
+Experienced in Cost Management at a manufacturing company, self-taught in SQL/Python/Power BI along the way. 
 This repository showcases end-to-end data projects, from cleaning and EDA to visualization and business insight.
 
 ### Projects
